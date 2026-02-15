@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVD: Hierarchical Value-Decomposed Offline RL for Whole-Body Control</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <header class="hero">
+        <div class="container">
+            <h1 class="title">Hierarchical Value-Decomposed Offline Reinforcement Learning for Whole-Body Control</h1>
+            <div class="authors">
+                <a href="#">Zhilong Zhang</a><sup>1,4</sup>*,
+                <a href="#">Yunpeng Mei</a><sup>2</sup>*,
+                <a href="#">Xinghao Du</a><sup>1,4</sup>*,
+                <a href="#">Hongjie Cao</a><sup>2</sup>*,
+                <a href="#">Haonan Wang</a><sup>1,4</sup>,
+                <a href="#">Pengyuan Min</a><sup>2</sup>,
+                <a href="#">Chenyu Wang</a><sup>2</sup>,
+                <a href="#">Pengfei Chen</a><sup>2</sup>,
+                <a href="#">Chenbo Xin</a><sup>2</sup>,
+                <a href="#">Yijie Wang</a><sup>2</sup>,
+                <a href="#">Wenyu Luo</a><sup>1</sup>,
+                <a href="#">Yihao Sun</a><sup>3</sup>,
+                <a href="#">Yidi Wang</a><sup>1,4</sup>,
+                <a href="#">Lei Yuan</a><sup>1</sup>,
+                <a href="#">Gang Wang</a><sup>2</sup>,
+                <a href="#">Yang Yu</a><sup>1,4</sup>
+            </div>
+            <div class="affiliations">
+                <sup>1</sup>National Key Laboratory for Novel Software Technology, Nanjing University & School of AI, Nanjing University<br>
+                <sup>2</sup>National Key Lab of Autonomous Intelligent Unmanned Systems, Beijing Inst. of Tech.<br>
+                <sup>3</sup>Mila-Quebec AI Institute & Université de Montréal<br>
+                <sup>4</sup>Polixir Technologies
+            </div>
+            <div class="links">
+                <a href="#" class="btn btn-primary">arXiv</a>
+                <a href="#" class="btn btn-primary">PDF</a>
+                <a href="#" class="btn btn-secondary">Code</a>
+                <a href="#" class="btn btn-secondary">Website</a>
+            </div>
+            <div class="badges">
+                <span class="badge">ICLR 2026</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="abstract" class="section">
+            <h2 class="section-title">Abstract</h2>
+            <div class="abstract-content">
+                <p>Scaling imitation learning to high degrees-of-freedom (DoF) whole-body robots is fundamentally limited by the increased DoF and the non-stationary observation transition. We argue that the core bottleneck is paradigmatic: real-world supervision for whole-body control is inherently imperfect, yet most methods assume expert data. To overcome this, we propose <strong>HVD</strong> (Hierarchical Value-Decomposed Offline Reinforcement Learning), an offline reinforcement learning framework that learns effective policies directly from suboptimal, reward-labeled trajectories. HVD structures the value function along the robot's kinematic hierarchy and over temporal chunks, enabling precise credit assignment in long-horizon, high-dimensional tasks. Built on a Transformer-based architecture, HVD supports <em>multi-modal</em> and <em>multi-task</em> learning, allowing flexible integration of diverse sensory inputs. To enable realistic evaluation and training, we further introduce <strong>WB-50</strong>, a 50-hour dataset of teleoperated and policy rollout trajectories annotated with rewards and preserving natural imperfections, including partial successes, corrections, and failures. Experiments show HVD significantly outperforms existing baselines in success rate across complex whole-body tasks.</p>
+            </div>
+        </section>
+
+        <section id="overview" class="section">
+            <h2 class="section-title">Overview</h2>
+            <p>HVD is a scalable framework for learning whole-body robotic control from imperfect, real-world demonstrations. By introducing kinematically aware value decomposition within a multi-modal Transformer architecture, HVD enables stable and scalable policy learning in high-dimensional action spaces using suboptimal offline data.</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <h3>WB-50 Dataset</h3>
+                    <p>50-hour whole-body robotics dataset of imperfect, reward-labeled trajectories</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏗️</div>
+                    <h3>Hierarchical Value Decomposition</h3>
+                    <p>Kinematically aware value decomposition with temporal chunking</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <h3>Multi-Modal Inputs</h3>
+                    <p>Supports RGB, point cloud, language, and proprioception</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎯</div>
+                    <h3>Multi-Task Learning</h3>
+                    <p>Single policy learns across diverse whole-body tasks</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Auto-detected Figures -->
+        <section id="figures" class="section">
+            <h2 class="section-title">Method Pipeline</h2>
+
+            <figure class="main-figure">
+                <img src="figures/scaling.pdf" alt="Performance comparison">
+                <figcaption>Performance comparison between 21-DoF whole-body policies and 7-DoF arm-only policies trained on 50 expert demonstrations.</figcaption>
+            </figure>
+
+            <figure class="main-figure">
+                <img src="figures/framework_rebuttal.pdf" alt="HVD Framework">
+                <figcaption>Framework of HVD. The proposed HVD framework consists of three stages: (1) Dataset construction and reward labeling from expert, suboptimal, and rollout data; (2) Hierarchical value learning with kinematically decomposed Q-functions and temporal chunking; and (3) Policy learning via hierarchical advantage-weighted regression.</figcaption>
+            </figure>
+
+            <figure class="main-figure">
+                <img src="figures/architecture.pdf" alt="Model Architecture">
+                <figcaption>Overall Model Architecture of Hierarchical Q-Network.</figcaption>
+            </figure>
+        </section>
+
+        <section id="tasks" class="section">
+            <h2 class="section-title">Tasks</h2>
+            <p>We evaluate HVD on five representative office tidying tasks requiring navigation, dexterous manipulation, and bimanual coordination.</p>
+
+            <figure class="main-figure">
+                <img src="figures/task description.png" alt="Task Illustration">
+                <figcaption>Illustration of evaluated tasks: (a) Pen Insert, (b) Cup Upright, (c) Wipe Board, (d) Basket Carry, (e) Trash Dispose.</figcaption>
+            </figure>
+
+            <div class="task-grid">
+                <div class="task-card">
+                    <h3>Pen Insert</h3>
+                    <p>Grasp a marker pen and insert it into a pen holder</p>
+                    <span class="task-difficulty easy">Easy</span>
+                </div>
+                <div class="task-card">
+                    <h3>Cup Upright</h3>
+                    <p>Grasp a cup and place it in an upright position on a plate</p>
+                    <span class="task-difficulty easy">Easy</span>
+                </div>
+                <div class="task-card">
+                    <h3>Wipe Board</h3>
+                    <p>Navigate to whiteboard, grasp eraser, wipe markings, return eraser</p>
+                    <span class="task-difficulty medium">Medium</span>
+                </div>
+                <div class="task-card">
+                    <h3>Basket Carry</h3>
+                    <p>Lift basket, carry to table, place markers into basket</p>
+                    <span class="task-difficulty hard">Hard</span>
+                </div>
+                <div class="task-card">
+                    <h3>Trash Dispose</h3>
+                    <p>Open trash bin, pick up trash, dispose, close bin</p>
+                    <span class="task-difficulty hard">Hard</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="results" class="section">
+            <h2 class="section-title">Main Results</h2>
+
+            <figure class="main-figure">
+                <img src="figures/exp4.pdf" alt="Stage-level scores">
+                <figcaption>Stage-level scores of IL and HVD across baseline methods across 5 tasks.</figcaption>
+            </figure>
+
+            <figure class="main-figure">
+                <img src="figures/weights_visual_main.pdf" alt="Credit Assignment">
+                <figcaption>Credit Assignment Comparison between HVD and HVD w/o hierarchy.</figcaption>
+            </figure>
+
+            <div class="results-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Pen Insert</th>
+                            <th>Cup Upright</th>
+                            <th>Wipe Board</th>
+                            <th>Basket Carry</th>
+                            <th>Trash Dispose</th>
+                            <th>Avg SR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="7" class="table-section">Imitation Learning (IL)</td>
+                        </tr>
+                        <tr>
+                            <td>&pi;<sub>0</sub></td>
+                            <td>0.64</td>
+                            <td>0.82</td>
+                            <td>0.18</td>
+                            <td>0.26</td>
+                            <td>0.28</td>
+                            <td>0.44</td>
+                        </tr>
+                        <tr>
+                            <td>WB-VIMA</td>
+                            <td>0.52</td>
+                            <td>0.58</td>
+                            <td>0.12</td>
+                            <td>0.10</td>
+                            <td>0.20</td>
+                            <td>0.30</td>
+                        </tr>
+                        <tr>
+                            <td>DP</td>
+                            <td>0.54</td>
+                            <td>0.66</td>
+                            <td>0.00</td>
+                            <td>0.00</td>
+                            <td>0.08</td>
+                            <td>0.26</td>
+                        </tr>
+                        <tr>
+                            <td colspan="7" class="table-section">HVD (Ours)</td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td>&pi;<sub>0</sub> + HVD</td>
+                            <td>0.86</td>
+                            <td>0.90</td>
+                            <td>0.32</td>
+                            <td>0.44</td>
+                            <td>0.36</td>
+                            <td><strong>0.58</strong></td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td>WB-VIMA + HVD</td>
+                            <td>0.78</td>
+                            <td>0.82</td>
+                            <td>0.26</td>
+                            <td>0.10</td>
+                            <td>0.32</td>
+                            <td><strong>0.46</strong></td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td>DP + HVD</td>
+                            <td>0.64</td>
+                            <td>0.72</td>
+                            <td>0.00</td>
+                            <td>0.08</td>
+                            <td>0.16</td>
+                            <td><strong>0.32</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="results-note">HVD consistently outperforms standard imitation learning across all tasks, yielding significantly higher average success rates (SR).</p>
+        </section>
+
+        <section id="dataset" class="section">
+            <h2 class="section-title">WB-50 Dataset</h2>
+            <p>We introduce WB-50, a 50-hour whole-body robotics dataset of imperfect, reward-labeled trajectories.</p>
+
+            <figure class="main-figure">
+                <img src="figures/dataset_distribution.pdf" alt="Dataset Distribution">
+                <figcaption>Data distribution of WB-50. The plot shows the proportional composition of the dataset by source, including expert demonstrations, suboptimal expert trajectories and rollout data.</figcaption>
+            </figure>
+        </section>
+
+        <section id="hardware" class="section">
+            <h2 class="section-title">Hardware Setup</h2>
+
+            <figure class="main-figure">
+                <img src="figures/hardware.png" alt="Hardware Setup">
+                <figcaption>Low-cost JoyLo system and Galaxea R1 robot.</figcaption>
+            </figure>
+        </section>
+
+        <!-- Auto-detected Video Demos -->
+        <section id="demos" class="section">
+            <h2 class="section-title">Video Demos</h2>
+            <p>Watch HVD policies executing whole-body manipulation tasks in real-world experiments.</p>
+
+            <div class="video-gallery">
+                <div class="video-item">
+                    <video controls preload="metadata">
+                        <source src="videos/Pen_Insert.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p class="video-caption">Pen Insert Task Demo</p>
+                </div>
+
+                <div class="video-item">
+                    <video controls preload="metadata">
+                        <source src="videos/Cup_Upright.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p class="video-caption">Cup Upright Task Demo</p>
+                </div>
+
+                <div class="video-item">
+                    <video controls preload="metadata">
+                        <source src="videos/Wipe_Board.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p class="video-caption">Wipe Board Task Demo</p>
+                </div>
+
+                <div class="video-item">
+                    <video controls preload="metadata">
+                        <source src="videos/Basket_Carry.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p class="video-caption">Basket Carry Task Demo</p>
+                </div>
+
+                <div class="video-item">
+                    <video controls preload="metadata">
+                        <source src="videos/Trash_Dispose.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p class="video-caption">Trash Dispose Task Demo</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="bib" class="section">
+            <h2 class="section-title">BibTeX</h2>
+            <div class="bibtex">
+<pre><code>@article{zhang2025hvd,
+  title={Hierarchical Value-Decomposed Offline Reinforcement Learning for Whole-Body Control},
+  author={Zhang, Zhilong and Mei, Yunpeng and Du, Xinghao and Cao, Hongjie and Wang, Haonan and Min, Pengyuan and Wang, Chenyu and Chen, Pengfei and Xin, Chenbo and Wang, Yijie and Luo, Wenyu and Sun, Yihao and Wang, Yidi and Yuan, Lei and Wang, Gang and Yu, Yang},
+  journal={arXiv preprint arXiv:2501.00000},
+  year={2025}
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="acknowledgments" class="section">
+            <h2 class="section-title">Acknowledgments</h2>
+            <p>This work is supported by the National Science Foundation of China (62495090, 62495093, 62506159, U24A20324), the Natural Science Foundation of Jiangsu (BK20241199, BK20243039).</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Project page generated from LaTeX source &bull; HVD: Hierarchical Value-Decomposed Offline RL</p>
+        </div>
+    </footer>
+</body>
+</html>
